@@ -11,13 +11,22 @@
     https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
 */
 
-function injectHTML(list) {
+function injectHTML(list, map) {
   console.log("fired injectHTML");
   const rightBoxDiv = document.getElementById("right_section_box");
   let result = "";
 
+  // Leaflet can be a bit old-fashioned.
+  // Here's some code to remove map markers.
+  map.eachLayer((layer) => {
+    if (layer instanceof L.Marker) {
+      layer.remove();
+    }
+  });
+  console.log(map);
   list.forEach((res) => {
     result += `<li>${res.name}. Location: ${res.location}</li>`;
+    new L.Marker(L.latLng(res.geoLocation[1], res.geoLocation[0])).addTo(map);
   });
 
   rightBoxDiv.setHTML(`
@@ -36,6 +45,7 @@ function processRestaurants(list) {
   const len = list.length;
   const taken = new Set();
 
+  console.log(list[0].geocoded_column_1.coordinates);
   while (n < 15) {
     const i = Math.floor(Math.random() * len);
 
@@ -48,6 +58,7 @@ function processRestaurants(list) {
       name: list[i].name,
       category: list[i].category,
       location: list[i].address_line_1,
+      geoLocation: list[i].geocoded_column_1.coordinates,
     };
 
     // eslint-disable-next-line no-plusplus
@@ -65,6 +76,21 @@ async function mainEvent() {
         If you separate your work, when one piece is complete, you can save it and trust it
     */
 
+  let maxBounds = [
+    [5.49955, -167.276413], //Southwest
+    [83.162102, -52.23304], //Northeast
+  ];
+
+  const map = L.map("map", {
+    center: [0, 0],
+    zoom: 0,
+    maxBounds: maxBounds,
+  }).fitBounds(maxBounds);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution:
+      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  }).addTo(map);
+
   // the async keyword means we can make API requests
   const form = document.querySelector(".main_form"); // get your main form so you can do JS with it
   const submit = document.querySelector('button[type="submit"]'); // get a reference to your submit button
@@ -75,7 +101,12 @@ async function mainEvent() {
       This next line goes to the request for 'GET' in the file at /server/routes/foodServiceRoutes.js
       It's at about line 27 - go have a look and see what we're retrieving and sending back.
      */
-  const results = await fetch("/api/foodServicePG");
+  const results = await fetch("https://data.princegeorgescountymd.gov/", {
+    method: 'POST',
+    body: JSON.stringify(movie),
+    headers: {
+      'Content-type' : 'application/json'
+    }});
   const arrayFromJson = await results.json(); // here is where we get the data from our request as JSON
 
   /*
@@ -112,7 +143,7 @@ async function mainEvent() {
       restaurantList = processRestaurants(arrayFromJson.data);
 
       // And this function call will perform the "side effect" of injecting the HTML list for you
-      injectHTML(restaurantList);
+      injectHTML(restaurantList, map);
 
       // By separating the functions, we open the possibility of regenerating the list
       // without having to retrieve fresh data every time
@@ -127,7 +158,8 @@ async function mainEvent() {
       injectHTML(
         restaurantList.filter((res) =>
           res.name.toLowerCase().includes(inputElem.value.toLowerCase())
-        )
+        ),
+        map
       );
     });
   }
