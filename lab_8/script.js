@@ -102,8 +102,7 @@ async function mainEvent() {
       It's at about line 27 - go have a look and see what we're retrieving and sending back.
      */
   const results = await fetch("https://data.princegeorgescountymd.gov/", {
-    method: 'POST',
-    body: JSON.stringify(movie),
+    method: 'GET',
     headers: {
       'Content-type' : 'application/json'
     }});
