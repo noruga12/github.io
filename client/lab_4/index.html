@@ -1,0 +1,53 @@
+<!-- Bring in your successful HTML/CSS from the Flexbox lab -->
+<!-- Try typing 'doc' at the top of this file and pressing "tab" -->
+<!-- if your development environment is set up correctly -->
+<!-- the Emmett plugin will set this file up for you -->
+
+<!-- Requirements -->
+<!-- Your page will need a form in it with an 'action' to /api and a single text field with an id/name of "resto" -->
+<!-- If you open /routes/apiRoutes and go to line 38 you will find the server side answer to your request! -->
+
+<!-- This week doesn't have a script.js file in it, because you're focusing on HTML and CSS -->
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Navneeth Oruganti's Lab 4</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+
+    <body>
+        <div class="wrapper">
+            <header class="header">
+                <h1>Navneeth's Labs For INST377</h1>
+            </header>
+            <div class="container">
+                <section class="left_section box">
+                    <form action="/api" method="post">
+                        <h2>Form Inputs</h2>
+                        <div class="box">
+                            <label for="resto">Restaurant Name</label>
+                            <input type="text" name="resto" id="resto">
+                            <button type="submit">Submit</button>
+                        </div>
+                    </form>
+                </section>
+                <section class="right_section box">
+                    <div class="sub_container">
+                        <h2>Local Restaurants</h2>
+                        <div class="box">
+                            A list of restaurants from an API
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <footer class="footer">
+                noruga12
+                <a href="https://github.com/noruga12/INST377-Lab-Work/tree/main/client">link to github account</a>
+            </footer>
+        </div>
+    </body>
+
+</html>
