@@ -101,7 +101,12 @@ async function mainEvent() {
       This next line goes to the request for 'GET' in the file at /server/routes/foodServiceRoutes.js
       It's at about line 27 - go have a look and see what we're retrieving and sending back.
      */
-  const results = await fetch("https://data.princegeorgescountymd.gov/");
+  const results = await fetch("https://data.princegeorgescountymd.gov/", {
+    method: 'POST',
+    body: JSON.stringify(movie),
+    headers: {
+      'Content-type' : 'application/json'
+    }});
   const arrayFromJson = await results.json(); // here is where we get the data from our request as JSON
 
   /*
