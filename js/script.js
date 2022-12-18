@@ -1,147 +1,120 @@
-function mainEvent() {
-  let image1 = document.getElementById("image1");
-  let image2 = document.getElementById("image2");
-  let submit = document.getElementById("countryForm");
+async function mainEvent(e) {
+  e.preventDefault();
+  const field = document.getElementById("country");
+  const field2 = document.getElementById("country1");
+  let submit = document.getElementById("countryFormSubmit");
 
-  image1.addEventListener("click", function () {
-    google.charts.load("current", { packages: ["corechart"] });
-    google.charts.setOnLoadCallback(drawPieChart);
+  const res = await fetch("https://open.er-api.com/v6/latest");
+  const json = await res.json();
+  Object.keys(json.rates).forEach((value) => {
+    field.innerHTML += `<option value=${value}>${value}</option>`;
+    field2.innerHTML += `<option value=${value}>${value}</option>`;
   });
-
-  image2.addEventListener("click", function () {
-    google.charts.load("current", { packages: ["scatter"] });
-    google.charts.setOnLoadCallback(drawScatterChart);
+  Chart.defaults.color = "yellow";
+  const chart = new Chart(document.getElementById("bar-chart"), {
+    type: "bar",
+    data: {
+      labels: Object.keys(json.rates).slice(0, 5),
+      datasets: [
+        {
+          backgroundColor: [
+            "#3e95cd",
+            "#8e5ea2",
+            "#3cba9f",
+            "#e8c3b9",
+            "#c45850",
+          ],
+          data: Object.values(json.rates).slice(0, 5),
+        },
+      ],
+    },
+    options: {
+      scales: {
+        y: {
+          ticks: { color: "yellow" },
+        },
+        x: {
+          ticks: { color: "yellow" },
+        },
+      },
+      legend: {
+        display: false,
+      },
+      title: {
+        display: true,
+        text: `Top 5 exchange rates`,
+      },
+    },
   });
 
   submit.addEventListener("click", async (e) => {
     e.preventDefault();
+
     const selectField = document.getElementById("country");
-    const value = selectField.value;
+    const fromValue = selectField.value;
     const text = selectField.options[selectField.selectedIndex].text;
     const selectField1 = document.getElementById("country1");
     const value1 = selectField1.value;
     const text1 = selectField1.options[selectField1.selectedIndex].text;
-    const results = await fetch("https://open.er-api.com/v6/latest/" + value);
-    const arrayFromJson = await results.json();
 
-    console.log(arrayFromJson);
-    document.getElementById("exchRate").innerHTML = arrayFromJson.rates[value1];
+    try {
+      const results = await fetch(
+        "https://open.er-api.com/v6/latest/" + fromValue
+      );
+      const arrayFromJson = await results.json();
+      const allRates = arrayFromJson.rates;
+      const allRatesValues = Object.values(allRates).sort();
+      const i = allRatesValues.findIndex((x) => x === allRates[value1]);
+      const allRatesValuesSlice = allRatesValues.slice(
+        i < Object.values(allRates).length ? Math.max(i, 0) : 0,
+        i < Object.values(allRates).length
+          ? Math.min(i + 4, Object.values(allRates).length)
+          : 5
+      );
+      const allKeys = Object.keys(allRates);
+      const allRatesKeys = [];
+      allRatesValuesSlice.forEach((x) => {
+        const idx = Object.keys(allRates).findIndex((k) => {
+          return x === allRates[k];
+        });
+
+        if (idx) {
+          allRatesKeys.push(allRates[allKeys[idx]]);
+        }
+      });
+
+      document.getElementById("exchRate").innerHTML =
+        arrayFromJson.rates[value1];
+
+      chart.clear();
+      chart.data.datasets.data = [];
+      chart.data.datasets = [
+        {
+          backgroundColor: [
+            "#3e95cd",
+            "#8e5ea2",
+            "#3cba9f",
+            "#e8c3b9",
+            "#c45850",
+          ],
+          data: allRatesValues,
+        },
+      ];
+      chart.data.labels.pop();
+      chart.data.datasets.forEach((dataset) => {
+        dataset.data.pop();
+      });
+      chart.update();
+      chart.config.data.datasets[0].data = allRatesValuesSlice;
+      chart.config.data.labels = allRatesKeys;
+      chart.update();
+    } catch (e) {
+      console.log(e);
+      document.getElementById(
+        "exchRate"
+      ).innerHTML = `Wrong input: ${value1}. Try Again!`;
+    }
   });
 }
 
-function drawPieChart() {
-  var data = google.visualization.arrayToDataTable([
-    ["Task", "Hours per Day"],
-    ["Work", 11],
-    ["Eat", 2],
-    ["Commute", 2],
-    ["Watch TV", 2],
-    ["Sleep", 7],
-  ]);
-
-  var options = {
-    width: 800,
-    height: 500,
-    title: "My Daily Activities",
-  };
-
-  var chart = new google.visualization.PieChart(
-    document.getElementById("piechart")
-  );
-
-  chart.draw(data, options);
-  let piechart = document.getElementById("piechart");
-  piechart.style.display = "flex";
-
-  let scatterchart = document.getElementById("scatterchart");
-  scatterchart.style.display = "none";
-}
-
-function drawScatterChart() {
-  var data = new google.visualization.DataTable();
-  data.addColumn("number", "Hours Studied");
-  data.addColumn("number", "Final");
-
-  data.addRows([
-    [0, 67],
-    [1, 88],
-    [2, 77],
-    [3, 93],
-    [4, 85],
-    [5, 91],
-    [6, 71],
-    [7, 78],
-    [8, 93],
-    [9, 80],
-    [10, 82],
-    [0, 75],
-    [5, 80],
-    [3, 90],
-    [1, 72],
-    [5, 75],
-    [6, 68],
-    [7, 98],
-    [3, 82],
-    [9, 94],
-    [2, 79],
-    [2, 95],
-    [2, 86],
-    [3, 67],
-    [4, 60],
-    [2, 80],
-    [6, 92],
-    [2, 81],
-    [8, 79],
-    [9, 83],
-    [3, 75],
-    [1, 80],
-    [3, 71],
-    [3, 89],
-    [4, 92],
-    [5, 85],
-    [6, 92],
-    [7, 78],
-    [6, 95],
-    [3, 81],
-    [0, 64],
-    [4, 85],
-    [2, 83],
-    [3, 96],
-    [4, 77],
-    [5, 89],
-    [4, 89],
-    [7, 84],
-    [4, 92],
-    [9, 98],
-  ]);
-
-  var options = {
-    width: 800,
-    height: 500,
-    chart: {
-      title: "Students' Final Grades",
-      subtitle: "based on hours studied",
-    },
-    hAxis: { title: "Hours Studied" },
-    vAxis: { title: "Grade" },
-  };
-
-  var chart = new google.charts.Scatter(
-    document.getElementById("scatterchart")
-  );
-
-  chart.draw(data, google.charts.Scatter.convertOptions(options));
-
-  let piechart = document.getElementById("piechart");
-  piechart.style.display = "none";
-
-  let scatterchart = document.getElementById("scatterchart");
-  scatterchart.style.display = "flex";
-}
-
-/*
-  This last line actually runs first!
-  It's calling the 'mainEvent' function at line 57
-  It runs first because the listener is set to when your HTML content has loaded
-*/
-document.addEventListener("DOMContentLoaded", async () => mainEvent()); // the async keyword means we can make API requests
+document.addEventListener("DOMContentLoaded", async (e) => mainEvent(e));
