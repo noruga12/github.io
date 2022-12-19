@@ -42,7 +42,7 @@ async function mainEvent(e) {
       },
       title: {
         display: true,
-        text: `Top 5 exchange rates`,
+        text: `5 exchange rates`,
       },
     },
   });
