@@ -68,7 +68,7 @@ async function mainEvent(e) {
       const allRatesValuesSlice = allRatesValues.slice(
         i < Object.values(allRates).length ? Math.max(i, 0) : 0,
         i < Object.values(allRates).length
-          ? Math.min(i + 4, Object.values(allRates).length)
+          ? Math.min(i + 5, Object.values(allRates).length)
           : 5
       );
       const allKeys = Object.keys(allRates);
@@ -79,7 +79,8 @@ async function mainEvent(e) {
         });
 
         if (idx) {
-          allRatesKeys.push(allRates[allKeys[idx]]);
+          allRatesKeys.push(allKeys[idx]);
+          console.log(allRatesKeys);
         }
       });
 
@@ -88,18 +89,18 @@ async function mainEvent(e) {
 
       chart.clear();
       chart.data.datasets.data = [];
-      chart.data.datasets = [
-        {
-          backgroundColor: [
-            "#3e95cd",
-            "#8e5ea2",
-            "#3cba9f",
-            "#e8c3b9",
-            "#c45850",
-          ],
-          data: allRatesValues,
-        },
-      ];
+      // chart.data.datasets = [
+      //   {
+      //     backgroundColor: [
+      //       "#3e95cd",
+      //       "#8e5ea2",
+      //       "#3cba9f",
+      //       "#e8c3b9",
+      //       "#c45850",
+      //     ],
+      //     data: allRatesValuesSlice,
+      //   },
+      // ];
       chart.data.labels.pop();
       chart.data.datasets.forEach((dataset) => {
         dataset.data.pop();
