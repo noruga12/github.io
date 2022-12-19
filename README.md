@@ -1,6 +1,6 @@
 # **Data Visualization Website**
 
-This website is hosted on the following github page : <https://samnathan7788.github.io/>
+This website is hosted on the following github page : <https://noruga12.github.io>
 
 **Target Browsers :** Chrome, Firefox, Edge
 
